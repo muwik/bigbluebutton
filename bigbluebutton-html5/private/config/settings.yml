@@ -8,10 +8,10 @@ public:
     # audio
     autoJoin: true
     # Disables the listen only option in audio modal.
-    listenOnlyMode: true
+    listenOnlyMode: false
     forceListenOnly: false
     # Skips the echo test when connecting with microphone.
-    skipCheck: false
+    skipCheck: true
     # Skips the echo test when connecting with microphone right after user
     # joins the room the first time. Subsequent joins to microphone won't
     # have echo test skipped, for example if user leaves and joins the mic
@@ -75,7 +75,7 @@ public:
     # restarting webcam.
     enableWebcamSelectorButton: true
     enableTalkingIndicator: true
-    enableCameraBrightness: true
+    enableCameraBrightness: false
     mirrorOwnWebcam: false
     viewersInWebcam: 8
     ipv4FallbackDomain: ''
@@ -144,7 +144,7 @@ public:
     # are used.
     # For more info, see 'microphoneConstraints' option in this config.
     # If not set, default value is true.
-    showAudioFilters: true
+    showAudioFilters: false
     raiseHandActionButton:
       # Enables the old raiseHand icon
       enabled: false
@@ -153,7 +153,7 @@ public:
     reactionsButton:
       # Enables the new raiseHand icon inside of the reaction menu (introduced in BBB 2.7)
       # If both reactionsButton and raiseHandActionButton are enabled, reactionsButton takes precedence.
-      enabled: true
+      enabled: false
     emojiRain:
       # If true, new reactions will be activated
       enabled: false
@@ -202,7 +202,7 @@ public:
         paginationEnabled: true
         whiteboardToolbarAutoHide: false
         autoCloseReactionsBar: true
-        directLeaveButton: false
+        directLeaveButton: true
         darkTheme: false
         # fallbackLocale: if the locale the client is loaded in does not have a
         # translation a string, it will use the translation from the locale
@@ -227,13 +227,13 @@ public:
         #These values are used as initial constraints for every new participant,
         #and can be changed by user in: Settings > Application > Microphone
         #Audio Filters.
-        # microphoneConstraints:
-        #   autoGainControl:
-        #     ideal: true
-        #   echoCancellation:
-        #     ideal: true
-        #   noiseSuppression:
-        #     ideal: true
+        microphoneConstraints:
+          autoGainControl:
+            ideal: true
+          echoCancellation:
+            ideal: true
+          noiseSuppression:
+            ideal: true
       audio:
         inputDeviceId: undefined
         outputDeviceId: undefined
@@ -401,10 +401,12 @@ public:
         name: Low
         default: false
         bitrate: 100
+        hidden: true
       - id: medium
         name: Medium
-        default: true
+        default: false
         bitrate: 200
+        hidden: true
       - id: high
         name: High
         default: false
@@ -412,10 +414,10 @@ public:
         constraints:
           width: 1280
           height: 720
-          frameRate: 15
+          frameRate: 30
       - id: hd
         name: High definition
-        default: false
+        default: true
         bitrate: 800
         constraints:
           width: 1280
@@ -425,10 +427,11 @@ public:
         name: Camera as content
         hidden: true
         default: false
-        bitrate: 1500
+        bitrate: 800
         constraints:
-          width: 1920
-          height: 1080
+          width: 1280
+          height: 720
+          frameRate: 30
     enableScreensharing: true
     enableVideo: true
     enableVideoMenu: true
@@ -444,8 +447,8 @@ public:
     # prevails (videoMediaServer).
     #videoMediaServer: Kurento
     autoShareWebcam: false
-    skipVideoPreview: false
-    skipVideoPreviewOnFirstJoin: false
+    skipVideoPreview: true
+    skipVideoPreviewOnFirstJoin: true
     # cameraSortingModes.paginationSorting: sorting mode to be applied when pagination is active
     # cameraSortingModes.defaultSorting: sorting mode when pagination is not active (full mesh)
     # Current implemented modes are:
@@ -544,7 +547,7 @@ public:
     enabled: false
     syncInterval: 60000
   poll:
-    enabled: true
+    enabled: false
     allowCustomResponseInput: true
     maxCustom: 5
     maxTypedAnswerLength: 45
@@ -589,7 +592,7 @@ public:
     timeBetweenFetchs: 1000
     enableSaveAndCopyPublicChat: true
     bufferChatInsertsMs: 0
-    startClosed: false
+    startClosed: true
     min_message_length: 1
     max_message_length: 5000
     grouping_messages_window: 10000
@@ -618,7 +621,7 @@ public:
     # e.g.: disableEmojis: ['grin','laughing']
     disableEmojis: []
   userReaction:
-    enabled: true
+    enabled: false
     expire: 60
     reactions:
       - id: 'smiley'
@@ -641,7 +644,7 @@ public:
     pinnable: true
   layout:
     hidePresentationOnJoin: false
-    showParticipantsOnLogin: true
+    showParticipantsOnLogin: false
     showPushLayoutButton: true
     showPushLayoutToggle: true
   pads:

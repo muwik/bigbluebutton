@@ -7,9 +7,10 @@
       <param name="keep-fec-enabled" value="1" />
       <param name="use-jb-lookahead" value="1" />
       <param name="advertise-useinbandfec" value="1" />
-      <param name="maxaveragebitrate" value="64000" />
+      <param name="maxaveragebitrate" value="192000" />
       <param name="maxplaybackrate" value="48000" />
       <param name="sprop-maxcapturerate" value="48000" />
+      <param name="sprop-stereo" value="1" />
       <param name="adjust-bitrate" value="1" />
       <param name="negotiate-bitrate" value="1" />
    </settings>
