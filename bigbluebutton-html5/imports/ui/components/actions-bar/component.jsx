@@ -12,6 +12,8 @@ import JoinVideoOptionsContainer from '../video-provider/video-button/container'
 import PresentationOptionsContainer from './presentation-options/component';
 import RaiseHandDropdownContainer from './raise-hand/container';
 import { isPresentationEnabled } from '/imports/ui/services/features';
+import Settings from '/imports/ui/services/settings';
+import { LAYOUT_TYPE } from '../layout/enums';
 
 class ActionsBar extends PureComponent {
   constructor(props) {
@@ -27,7 +29,7 @@ class ActionsBar extends PureComponent {
   }
 
   setCaptionsReaderMenuModalIsOpen(value) {
-    this.setState({ isCaptionsReaderMenuModalOpen: value })
+    this.setState({ isCaptionsReaderMenuModalOpen: value });
   }
 
   renderRaiseHand() {
@@ -35,15 +37,19 @@ class ActionsBar extends PureComponent {
       isReactionsButtonEnabled, isRaiseHandButtonEnabled, setEmojiStatus, currentUser, intl,
     } = this.props;
 
-    return (<>
-      {isReactionsButtonEnabled ?
+    return (
         <>
-          <Styled.Separator />
-          <ReactionsButtonContainer actionsBarRef={this.actionsBarRef} />
-        </> :
-        isRaiseHandButtonEnabled ? <RaiseHandDropdownContainer {...{ setEmojiStatus, currentUser, intl }} />
-          : null}
-    </>);
+          {isReactionsButtonEnabled
+              ? (
+                  <>
+                    <Styled.Separator />
+                    <ReactionsButtonContainer actionsBarRef={this.actionsBarRef} />
+                  </>
+              )
+              : isRaiseHandButtonEnabled ? <RaiseHandDropdownContainer {...{ setEmojiStatus, currentUser, intl }} />
+                  : null}
+        </>
+    );
   }
 
   render() {
@@ -80,95 +86,110 @@ class ActionsBar extends PureComponent {
 
     const { isCaptionsReaderMenuModalOpen } = this.state;
 
+    const { selectedLayout } = Settings.application;
+    const shouldShowPresentationButton = selectedLayout !== LAYOUT_TYPE.CAMERAS_ONLY
+        && selectedLayout !== LAYOUT_TYPE.PARTICIPANTS_AND_CHAT_ONLY;
+    const shouldShowVideoButton = selectedLayout !== LAYOUT_TYPE.PRESENTATION_ONLY
+        && selectedLayout !== LAYOUT_TYPE.PARTICIPANTS_AND_CHAT_ONLY;
+
     const shouldShowOptionsButton = (isPresentationEnabled() && isThereCurrentPresentation)
-      || isSharingVideo || hasScreenshare || isSharedNotesPinned;
+        || isSharingVideo || hasScreenshare || isSharedNotesPinned;
+
     return (
-      <Styled.ActionsBar
-        ref={this.actionsBarRef}
-        style={
-          {
-            height: actionsBarStyle.innerHeight,
-          }
-        }
-      >
-        <Styled.Left>
-          <ActionsDropdown {...{
-            amIPresenter,
-            amIModerator,
-            isPollingEnabled,
-            isSelectRandomUserEnabled,
-            allowExternalVideo,
-            handleTakePresenter,
-            intl,
-            isSharingVideo,
-            stopExternalVideoShare,
-            isTimerActive,
-            isTimerEnabled,
-            isMeteorConnected,
-            setMeetingLayout,
-            setPushLayout,
-            presentationIsOpen,
-            showPushLayout,
-            hasCameraAsContent,
-            setPresentationFitToWidth,
-          }}
-          />
-          {isCaptionsAvailable
-            ? (
-              <>
-                <CaptionsButtonContainer {...{ intl,
-                  setIsOpen: this.setCaptionsReaderMenuModalIsOpen,}} />
-                {
-                  isCaptionsReaderMenuModalOpen ? <CaptionsReaderMenuContainer
-                    {...{
-                      onRequestClose: () => this.setCaptionsReaderMenuModalIsOpen(false),
-                      priority: "low",
-                      setIsOpen: this.setCaptionsReaderMenuModalIsOpen,
-                      isOpen: isCaptionsReaderMenuModalOpen,
-                    }}
-                  /> : null
-                }
-              </>
-            )
-            : null}
-          { !deviceInfo.isMobile
-            ? (
-              <AudioCaptionsButtonContainer />
-            )
-            : null }
-        </Styled.Left>
-        <Styled.Center>
-          <AudioControlsContainer />
-          {enableVideo
-            ? (
-              <JoinVideoOptionsContainer />
-            )
-            : null}
-          <ScreenshareButtonContainer {...{
-            amIPresenter,
-            isMeteorConnected,
-          }}
-          />
-        {isRaiseHandButtonCentered && this.renderRaiseHand()}
-        </Styled.Center>
-        <Styled.Right>
-          { shouldShowOptionsButton ?
-            <PresentationOptionsContainer
-              presentationIsOpen={presentationIsOpen}
-              setPresentationIsOpen={setPresentationIsOpen}
-              layoutContextDispatch={layoutContextDispatch}
-              hasPresentation={isThereCurrentPresentation}
-              hasExternalVideo={isSharingVideo}
-              hasScreenshare={hasScreenshare}
-              hasPinnedSharedNotes={isSharedNotesPinned}
-              hasGenericContent={hasGenericContent}
-              hasCameraAsContent={hasCameraAsContent}
+        <Styled.ActionsBar
+            ref={this.actionsBarRef}
+            style={
+              {
+                height: actionsBarStyle.innerHeight,
+              }
+            }
+        >
+          <Styled.Left>
+            <ActionsDropdown {...{
+              amIPresenter,
+              amIModerator,
+              isPollingEnabled,
+              isSelectRandomUserEnabled,
+              allowExternalVideo,
+              intl,
+              handleTakePresenter,
+              isSharingVideo,
+              stopExternalVideoShare,
+              isTimerActive,
+              isTimerEnabled,
+              isMeteorConnected,
+              setMeetingLayout,
+              setPushLayout,
+              presentationIsOpen,
+              showPushLayout,
+              hasCameraAsContent,
+              setPresentationFitToWidth,
+            }}
             />
-            : null
-          }
-          {!isRaiseHandButtonCentered && this.renderRaiseHand()}
-        </Styled.Right>
-      </Styled.ActionsBar>
+            {isCaptionsAvailable
+                ? (
+                    <>
+                      <CaptionsButtonContainer {...{
+                        intl,
+                        setIsOpen: this.setCaptionsReaderMenuModalIsOpen,
+                      }}
+                      />
+                      {
+                        isCaptionsReaderMenuModalOpen ? (
+                            <CaptionsReaderMenuContainer
+                                {...{
+                                  onRequestClose: () => this.setCaptionsReaderMenuModalIsOpen(false),
+                                  priority: 'low',
+                                  setIsOpen: this.setCaptionsReaderMenuModalIsOpen,
+                                  isOpen: isCaptionsReaderMenuModalOpen,
+                                }}
+                            />
+                        ) : null
+                      }
+                    </>
+                )
+                : null}
+            {!deviceInfo.isMobile
+                ? (
+                    <AudioCaptionsButtonContainer />
+                )
+                : null}
+          </Styled.Left>
+          <Styled.Center>
+            <AudioControlsContainer />
+            {shouldShowVideoButton && enableVideo
+                ? (
+                    <JoinVideoOptionsContainer />
+                )
+                : null}
+            {shouldShowPresentationButton && (
+                <ScreenshareButtonContainer {...{
+                  amIPresenter,
+                  isMeteorConnected,
+                }}
+                />
+            )}
+            {isRaiseHandButtonCentered && this.renderRaiseHand()}
+          </Styled.Center>
+          <Styled.Right>
+            {shouldShowPresentationButton && shouldShowOptionsButton
+                ? (
+                    <PresentationOptionsContainer
+                        presentationIsOpen={presentationIsOpen}
+                        setPresentationIsOpen={setPresentationIsOpen}
+                        layoutContextDispatch={layoutContextDispatch}
+                        hasPresentation={isThereCurrentPresentation}
+                        hasExternalVideo={isSharingVideo}
+                        hasScreenshare={hasScreenshare}
+                        hasPinnedSharedNotes={isSharedNotesPinned}
+                        hasGenericContent={hasGenericContent}
+                        hasCameraAsContent={hasCameraAsContent}
+                    />
+                )
+                : null}
+            {!isRaiseHandButtonCentered && this.renderRaiseHand()}
+          </Styled.Right>
+        </Styled.ActionsBar>
     );
   }
 }

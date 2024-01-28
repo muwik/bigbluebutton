@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { defineMessages, injectIntl } from 'react-intl';
-import { LAYOUT_TYPE, CAMERADOCK_POSITION } from '/imports/ui/components/layout/enums';
+import { LAYOUT_TYPE, CAMERADOCK_POSITION, HIDDEN_LAYOUTS } from '/imports/ui/components/layout/enums';
 import SettingsService from '/imports/ui/components/settings/service';
 import deviceInfo from '/imports/utils/deviceInfo';
 import Button from '/imports/ui/components/common/button/component';
@@ -80,7 +80,7 @@ const LayoutModalComponent = (props) => {
   const handleUpdateLayout = (updateAll) => {
     const obj = {
       application:
-      { ...application, selectedLayout, pushLayout: updateAll },
+          { ...application, selectedLayout, pushLayout: updateAll },
     };
     updateSettings(obj, intlMessages.layoutToastLabel);
     setIsOpen(false);
@@ -93,76 +93,77 @@ const LayoutModalComponent = (props) => {
 
     if (isKeepPushingLayoutEnabled) {
       return (
-        <Styled.BottomButton
-          label={intl.formatMessage(intlMessages.updateAll)}
-          onClick={() => handleUpdateLayout(true)}
-          color="secondary"
-          data-test="updateEveryoneLayoutBtn"
-        />
+          <Styled.BottomButton
+              label={intl.formatMessage(intlMessages.updateAll)}
+              onClick={() => handleUpdateLayout(true)}
+              color="secondary"
+              data-test="updateEveryoneLayoutBtn"
+          />
       );
     }
     return null;
   };
 
   const renderLayoutButtons = () => (
-    <Styled.ButtonsContainer>
-      {Object.values(LAYOUT_TYPE)
-        .map((layout) => (
-          <Styled.ButtonLayoutContainer key={layout}>
-            <Styled.LayoutBtn
-              label=""
-              customIcon={(
-                <Styled.IconSvg
-                  src={`${LAYOUTS_PATH}${layout}.svg`}
-                  alt={`${layout} ${intl.formatMessage(intlMessages.layoutSingular)}`}
-                />
-                )}
-              onClick={() => {
-                handleSwitchLayout(layout);
-                if (layout === LAYOUT_TYPE.CUSTOM_LAYOUT && application.selectedLayout !== layout) {
-                  document.getElementById('layout')?.setAttribute('data-cam-position', CAMERADOCK_POSITION.CONTENT_TOP);
-                }
-              }}
-              active={(layout === selectedLayout).toString()}
-              aria-describedby="layout-btn-desc"
-              data-test={`${layout}Layout`}
-            />
-            <Styled.LabelLayoutNames aria-hidden>{intl.formatMessage(intlMessages[`${layout}Layout`])}</Styled.LabelLayoutNames>
-          </Styled.ButtonLayoutContainer>
-        ))}
-    </Styled.ButtonsContainer>
+      <Styled.ButtonsContainer>
+        {Object.values(LAYOUT_TYPE)
+            .filter((layout) => !HIDDEN_LAYOUTS.includes(layout))
+            .map((layout) => (
+                <Styled.ButtonLayoutContainer key={layout}>
+                  <Styled.LayoutBtn
+                      label=""
+                      customIcon={(
+                          <Styled.IconSvg
+                              src={`${LAYOUTS_PATH}${layout}.svg`}
+                              alt={`${layout} ${intl.formatMessage(intlMessages.layoutSingular)}`}
+                          />
+                      )}
+                      onClick={() => {
+                        handleSwitchLayout(layout);
+                        if (layout === LAYOUT_TYPE.CUSTOM_LAYOUT && application.selectedLayout !== layout) {
+                          document.getElementById('layout')?.setAttribute('data-cam-position', CAMERADOCK_POSITION.CONTENT_TOP);
+                        }
+                      }}
+                      active={(layout === selectedLayout).toString()}
+                      aria-describedby="layout-btn-desc"
+                      data-test={`${layout}Layout`}
+                  />
+                  <Styled.LabelLayoutNames aria-hidden>{intl.formatMessage(intlMessages[`${layout}Layout`])}</Styled.LabelLayoutNames>
+                </Styled.ButtonLayoutContainer>
+            ))}
+      </Styled.ButtonsContainer>
   );
 
   return (
-    <Styled.LayoutModal
-      contentLabel={intl.formatMessage(intlMessages.title)}
-      shouldShowCloseButton
-      shouldCloseOnOverlayClick
-      isPhone={deviceInfo.isPhone}
-      data-test="layoutChangeModal"
-      onRequestClose={() => setIsOpen(false)}
-      title={intl.formatMessage(intlMessages.title)}
-      {...{
-        isOpen,
-        onRequestClose,
-      }}
-    >
-      <Styled.Content>
-        <Styled.BodyContainer>
-          {renderLayoutButtons()}
-        </Styled.BodyContainer>
-      </Styled.Content>
-      <Styled.ButtonBottomContainer>
-        {renderPushLayoutsOptions()}
-        <Button
-          color="primary"
-          label={intl.formatMessage(intlMessages.update)}
-          onClick={() => handleUpdateLayout(false)}
-          data-test="updateLayoutBtn"
-        />
-      </Styled.ButtonBottomContainer>
-      <div style={{ display: 'none' }} id="layout-btn-desc">{intl.formatMessage(intlMessages.layoutBtnDesc)}</div>
-    </Styled.LayoutModal>
+      <Styled.LayoutModal
+          contentLabel={intl.formatMessage(intlMessages.title)}
+          shouldShowCloseButton
+          shouldCloseOnOverlayClick
+          isPhone={deviceInfo.isPhone}
+          data-test="layoutChangeModal"
+          onRequestClose={() => setIsOpen(false)}
+          title={intl.formatMessage(intlMessages.title)}
+          {...{
+            isOpen,
+            onRequestClose,
+          }}
+      >
+        <Styled.Content>
+          <Styled.BodyContainer>
+            {renderLayoutButtons()}
+          </Styled.BodyContainer>
+        </Styled.Content>
+        <Styled.ButtonBottomContainer>
+          {renderPushLayoutsOptions()}
+          <Button
+              color="primary"
+              label={intl.formatMessage(intlMessages.update)}
+              onClick={() => handleUpdateLayout(false)}
+              data-test="updateLayoutBtn"
+          />
+        </Styled.ButtonBottomContainer>
+        <div style={{ display: 'none' }} id="layout-btn-desc">{intl.formatMessage(intlMessages.layoutBtnDesc)}</div>
+      </Styled.LayoutModal>
   );
 };
 
